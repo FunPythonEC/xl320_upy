@@ -97,31 +97,26 @@ crc_table = [
 	0x8213, 0x0216, 0x021C, 0x8219, 0x0208, 0x820D, 0x8207, 0x0202
 ]
 
+HEADER = [0xFF, 0xFF, 0xFD, 0x00]
+
 class xl320(object):
-	def __init__(self, id=1, baudrate=1000000, serialid=2):
-		self.id=id
+	#constructor
+	def __init__(self, baudrate=1000000, serialid=2):
+		
 		self.baudrate=baudrate
 		self.serialid=serialid
 
+		#definicion de objeto serial
 		try:
 			self.uart = m.UART(self.serialid,self.baudrate)
-		except Exception as e:
-			print(e)
-
-	def write(self, reg, params):
-		
-		try:
 			self.uart.init(self.baudrate, bits=8, parity=None, stop=1)
 		except Exception as e:
 			print(e)
-			
-		if reg==GOAL_POSITION:
-			if not (0.0 <= params <= 300.0):
-				raise Exception('makeServoPacket(), angle out of bounds: {}'.format(params))
-			params=le(int(params/300*1023))
+
+	def write(self, ID, reg=None, params=None):
 
 		try:
-			self.uart.write(bytearray(makePacket(self.id, WRITE, reg, params)))
+			self.uart.write(bytearray(makePacket(ID, WRITE, reg, params)))
 		except Exception as e:
 			print(e)
 
@@ -129,7 +124,27 @@ class xl320(object):
 		rmsg = self.uart.read()
 		return rmsg
 
-def makePacket(ID, instr, reg=None, params=None):
+	def torqueenable(self, ID, status): #default 0 (torque disabled), 1 (torque enabled), cuando torque enabled, eeprom es bloqueado
+
+		pkt = bytearray(makePacket(ID, WRITE, TORQUE_ENABLE, [status]))
+		self.uart.write(pkt)
+
+	def controlmode(self,ID, mode): # 1 (wheel), 2 (joint)
+
+		pkt = bytearray(makePacket(ID, WRITE, CONTROL_MODE, [mode]))
+		self.uart.write(pkt)
+
+	def goalspeed(self, ID, speed):
+
+		pkt = bytearray(makePacket(ID, WRITE, GOAL_VELOCITY, le(speed)))
+		self.uart.write(pkt)
+
+	def goalposition(self, ID, position):
+
+		pkt = bytearray(makePacket(ID, WRITE, GOAL_POSITION, le(position/300*1023)))
+		self.uart.write(pkt)
+
+def makePacket(ID, instr, reg, params):
 	"""
 	This makes a generic packet.
 
@@ -144,8 +159,7 @@ def makePacket(ID, instr, reg=None, params=None):
 	out: packet
 	"""
 	pkt = []
-	pkt += [0xFF, 0xFF, 0xFD]  # header
-	pkt += [0x00]  # reserved byte
+	pkt += HEADER  # header and reserved byte
 	pkt += [ID]
 	pkt += [0x00, 0x00]  # length placeholder
 	pkt += [instr]  # instruction
@@ -156,11 +170,10 @@ def makePacket(ID, instr, reg=None, params=None):
 	length = le(len(pkt) - 5)  # length = len(packet) - (header(3), reserve(1), id(1))
 	pkt[5] = length[0]  # L
 	pkt[6] = length[1]  # H
-
 	crc = crc16(pkt)
 	pkt += le(crc)
+	print(pkt)
 	return pkt
-
 
 # util function?
 def le(h):
