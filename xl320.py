@@ -120,8 +120,9 @@ class xl320(object):
 		except Exception as e:
 			print(e)
 
-		time.sleep_ms(100)
+		time.sleep_ms(50)
 		rmsg = self.uart.read()
+		print(rmsg)
 		return rmsg
 
 	def torqueenable(self, ID, status): #default 0 (torque disabled), 1 (torque enabled), cuando torque enabled, eeprom es bloqueado
@@ -141,10 +142,16 @@ class xl320(object):
 
 	def goalposition(self, ID, position):
 
-		pkt = bytearray(makePacket(ID, WRITE, GOAL_POSITION, le(position/300*1023)))
+		pkt = bytearray(makePacket(ID, WRITE, GOAL_POSITION, le(int(position/300*1023))))
 		self.uart.write(pkt)
 
-def makePacket(ID, instr, reg, params):
+	def readposition(self, ID):
+		pkt=bytearray(makePacket(ID,READ,reg=PRESENT_POSITION))
+		return pkt
+
+	def readid(self,)
+
+def makePacket(ID, instr, reg=None, params=None):
 	"""
 	This makes a generic packet.
 
