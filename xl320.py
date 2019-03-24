@@ -113,6 +113,7 @@ class xl320(object):
 		except Exception as e:
 			print(e)
 
+	#METODO GENERICO ESCRITURA
 	def write(self, ID, reg=None, params=None):
 
 		try:
@@ -120,36 +121,77 @@ class xl320(object):
 		except Exception as e:
 			print(e)
 
-		time.sleep_ms(50)
-		rmsg = self.uart.read()
-		print(rmsg)
-		return rmsg
+		time.sleep_us(500)
+		while True:
+			msg=self.uart.read()
+			if msg is not None and msg!=bytearray(pkt):
+				break
+		print(msg)
 
+	#METODO GENERICO LECTURA
+	def read(self, ID, reg, length):
+
+		try:
+			self.uart.write(bytearray(makePacket(ID, READ, reg, le(length))))
+		except Exception as e:
+			print(e)
+
+		time.sleep_us(500)
+		while True:
+			msg=self.uart.read()
+			if msg is not None and msg!=bytearray(pkt):
+				break
+		print(msg)
+
+#----------------------METODOS ESPECIFICOS ESCRITURA------------------------------
 	def torqueenable(self, ID, status): #default 0 (torque disabled), 1 (torque enabled), cuando torque enabled, eeprom es bloqueado
-
-		pkt = bytearray(makePacket(ID, WRITE, TORQUE_ENABLE, [status]))
-		self.uart.write(pkt)
+		comwrite(self.uart,ID,TORQUE_ENABLE,[status])
 
 	def controlmode(self,ID, mode): # 1 (wheel), 2 (joint)
-
-		pkt = bytearray(makePacket(ID, WRITE, CONTROL_MODE, [mode]))
-		self.uart.write(pkt)
+		comwrite(self.uart,ID,CONTROL_MODE,[mode])
 
 	def goalspeed(self, ID, speed):
-
-		pkt = bytearray(makePacket(ID, WRITE, GOAL_VELOCITY, le(speed)))
-		self.uart.write(pkt)
+		comwrite(self.uart,ID,GOAL_VELOCITY,le(speed))
 
 	def goalposition(self, ID, position):
+		comwrite(self.uart,ID,GOAL_POSITION,le(int(position/300*1023)))
 
-		pkt = bytearray(makePacket(ID, WRITE, GOAL_POSITION, le(int(position/300*1023))))
-		self.uart.write(pkt)
-
+#---------------------METODO ESPECIFICOS LECTURA----------------------------------
 	def readposition(self, ID):
-		pkt=bytearray(makePacket(ID,READ,reg=PRESENT_POSITION))
-		return pkt
+		comread(self.uart,ID,PRESENT_POSITION,le(2))
 
-	def readid(self,)
+	def readbaudrate(self,ID):
+		comread(self.uart,ID,BAUD_RATE,le(1))
+
+#--------------------METODOS EXTERNOS--------------------------------------
+def comwrite(com, ID, reg=None, params=None):
+		try:
+			pkt=bytearray(makePacket(ID, WRITE, reg, params))
+			com.write(pkt)
+		except Exception as e:
+			print(e)
+
+		time.sleep_us(500)
+		while True:
+			msg=com.read()
+			if msg is not None and msg!=bytearray(pkt):
+				break
+		print(msg)
+
+def comread(com, ID, reg, length):
+
+		try:
+			pkt=bytearray(makePacket(ID, WRITE, reg, params))
+			com.write(pkt)
+		except Exception as e:
+			print(e)
+
+		time.sleep_us(500)
+		while True:
+			msg=com.read()
+			if msg is not None and msg!=bytearray(pkt):
+				break
+		print(msg)
 
 def makePacket(ID, instr, reg=None, params=None):
 	"""
