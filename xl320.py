@@ -179,19 +179,31 @@ class xl320(object):
 		comwrite(self.uart,ID,XL320_GOAL_TORQUE,le(1023))
 
 #---------------------METODO ESPECIFICOS LECTURA----------------------------------
-	def readposition(self, ID):
-		comread(self.uart,ID,PRESENT_POSITION,le(2))
+#==================================EEPROM=========================================
 
-	def readbaudrate(self,ID):
-		comread(self.uart,ID,BAUD_RATE,le(1))
+	def read_model_number(self,ID):
+		comread(self.uart,ID,XL320_MODEL_NUMBER,le(2))
+
+
+	def read_baudrate(self,ID):
+		comread(self.uart,ID,XL320_BAUD_RATE,le(1))
 	
-	def readcontrolmode(self, ID):
-		comread(self.uart,ID,CONTROL_MODE,le(1))
+	def read_controlmode(self, ID):
+		comread(self.uart,ID,XL320_CONTROL_MODE,le(1))
 
-	def readgoalspeed(self,ID):
-		comread(self.uart,ID,GOAL_VELOCITY,le(2))
 
-#--------------------METODOS EXTERNOS--------------------------------------
+#========================RAM======================================================
+
+	def read_position(self, ID):
+		comread(self.uart,ID,XL320_PRESENT_POSITION,le(2))
+
+	def read_goalspeed(self,ID):
+		comread(self.uart,ID,XL320_GOAL_VELOCITY,le(2))
+
+
+#-------------------OTROS METODOS-------------------------------------------------
+
+#--------------------METODOS GENERICOS--------------------------------------
 def comwrite(com, ID, reg=None, params=None):
 		try:
 			pkt=bytearray(makePacket(ID, WRITE, reg, params))
