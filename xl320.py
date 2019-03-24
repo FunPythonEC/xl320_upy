@@ -16,47 +16,47 @@ BULK_READ  = 0x92
 BULK_WRITE = 0x93
 
 # -------- EEPROM -------------
-MODEL_NUMBER    = 0
-VER_FIRMWARE    = 2
-ID              = 3
-BAUD_RATE       = 4
-DELAY_TIME      = 5
-CW_ANGLE_LIMIT  = 6   # min angle, default 0
-CCW_ANGLE_LIMIT = 8   # max angle, default 300
-CONTROL_MODE    = 11  # joint or wheel mode, default joint (servo)
-MAX_TORQUE      = 15
-RETURN_LEVEL    = 17
+XL320_MODEL_NUMBER    = 0
+XL320_VER_FIRMWARE    = 2
+XL320_ID              = 3
+XL320_BAUD_RATE       = 4
+XL320_DELAY_TIME      = 5
+XL320_CW_ANGLE_LIMIT  = 6   # min angle, default 0
+XL320_CCW_ANGLE_LIMIT = 8   # max angle, default 300
+XL320_CONTROL_MODE    = 11  # joint or wheel mode, default joint (servo)
+XL320_MAX_TORQUE      = 15
+XL320_RETURN_LEVEL    = 17
 
 # -------- RAM ----------------
-TORQUE_ENABLE    = 24  # servo mode on/off - turn into wheel
-LED              = 25
-GOAL_POSITION    = 30
-GOAL_VELOCITY    = 32
-GOAL_TORQUE      = 35
-PRESENT_POSITION = 37  # current servo angle
-PRESENT_SPEED    = 39  # current speed
-PESENT_LOAD      = 41  # current load
-PESENT_VOLTAGE   = 45  # current voltage
-PESENT_TEMP      = 46  # current temperature
-MOVING           = 49
-HW_ERROR_STATUS  = 50
-PUNCH            = 51
+XL320_TORQUE_ENABLE    = 24  # servo mode on/off - turn into wheel
+XL320_LED              = 25
+XL320_GOAL_POSITION    = 30
+XL320_GOAL_VELOCITY    = 32
+XL320_GOAL_TORQUE      = 35
+XL320_PRESENT_POSITION = 37  # current servo angle
+XL320_PRESENT_SPEED    = 39  # current speed
+XL320_PRESENT_LOAD      = 41  # current load
+XL320_PRESENT_VOLTAGE   = 45  # current voltage
+XL320_PRESENT_TEMP      = 46  # current temperature
+XL320_MOVING           = 49
+XL320_HW_ERROR_STATUS  = 50
+XL320_PUNCH            = 51
 
 # --------- OTHER -------------
-RESET_ALL                  = 0xFF
-RESET_ALL_BUT_ID           = 0x01
-RESET_ALL_BUT_ID_BAUD_RATE = 0x02
-LED_WHITE                  = 7
-LED_BLUE_GREEN             = 6
-LED_PINK                   = 5
-LED_BLUE                   = 4
-LED_YELLOW                 = 3
-LED_GREEN                  = 2
-LED_RED                    = 1
-LED_OFF                    = 0
-BROADCAST_ADDR             = 0xfe  # a packet with this ID will go to all servos
-WHEEL_MODE                 = 1
-JOINT_MODE                 = 2  # normal servo
+XL320_RESET_ALL                  = 0xFF
+XL320_RESET_ALL_BUT_ID           = 0x01
+XL320_RESET_ALL_BUT_ID_BAUD_RATE = 0x02
+XL320_LED_WHITE                  = 7
+XL320_LED_BLUE_GREEN             = 6
+XL320_LED_PINK                   = 5
+XL320_LED_BLUE                   = 4
+XL320_LED_YELLOW                 = 3
+XL320_LED_GREEN                  = 2
+XL320_LED_RED                    = 1
+XL320_LED_OFF                    = 0
+XL320_BROADCAST_ADDR             = 0xfe  # a packet with this ID will go to all servos
+XL320_WHEEL_MODE                 = 1
+XL320_JOINT_MODE                 = 2  # normal servo
 XL320_9600                       = 0  # 0: 9600, 1:57600, 2:115200, 3:1Mbps
 XL320_57600                      = 1
 XL320_115200                     = 2
@@ -156,6 +156,9 @@ class xl320(object):
 	def goalposition(self, ID, position):
 		comwrite(self.uart,ID,GOAL_POSITION,le(int(position/300*1023)))
 
+	def setid(self,ID,newID):
+		comwrite(self.uart,ID,ID)
+
 #---------------------METODO ESPECIFICOS LECTURA----------------------------------
 	def readposition(self, ID):
 		comread(self.uart,ID,PRESENT_POSITION,le(2))
@@ -182,7 +185,7 @@ def comwrite(com, ID, reg=None, params=None):
 			msg=com.read()
 			if msg is not None:
 				print(msg)
-			if (utime.ticks_us()-a)>=1000:
+			if (utime.ticks_us()-a)>=1450:
 				break
 		
 
