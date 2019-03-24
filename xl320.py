@@ -1,6 +1,6 @@
 import machine as m
 import time
-
+import utime
 # --------- INSTRUCTIONS -----
 PING      = 0x01
 READ      = 0x02
@@ -162,36 +162,44 @@ class xl320(object):
 
 	def readbaudrate(self,ID):
 		comread(self.uart,ID,BAUD_RATE,le(1))
+	
+	def readcontrolmode(self, ID):
+		comread(self.uart,ID,CONTROL_MODE,le(1))
+
+	def readgoalspeed(self,ID):
+		comread(self.uart,ID,GOAL_VELOCITY,le(2))
 
 #--------------------METODOS EXTERNOS--------------------------------------
 def comwrite(com, ID, reg=None, params=None):
 		try:
 			pkt=bytearray(makePacket(ID, WRITE, reg, params))
 			com.write(pkt)
+			a=utime.ticks_us()
+			time.sleep_us(500)
 		except Exception as e:
 			print(e)
-
-		time.sleep_us(500)
 		while True:
 			msg=com.read()
-			if msg is not None and msg!=bytearray(pkt):
+			if msg is not None:
+				print(msg)
+			if (utime.ticks_us()-a)>=1000:
 				break
-		print(msg)
+		
 
 def comread(com, ID, reg, length):
-
 		try:
-			pkt=bytearray(makePacket(ID, WRITE, reg, params))
+			pkt=bytearray(makePacket(ID, READ, reg, length))
 			com.write(pkt)
+			a=utime.ticks_us()
+			time.sleep_us(500)
 		except Exception as e:
 			print(e)
-
-		time.sleep_us(500)
 		while True:
 			msg=com.read()
-			if msg is not None and msg!=bytearray(pkt):
+			if msg is not None:
+				print(msg)
+			if (utime.ticks_us()-a)>=1450:
 				break
-		print(msg)
 
 def makePacket(ID, instr, reg=None, params=None):
 	"""
