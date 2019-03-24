@@ -144,20 +144,39 @@ class xl320(object):
 		print(msg)
 
 #----------------------METODOS ESPECIFICOS ESCRITURA------------------------------
-	def torqueenable(self, ID, status): #default 0 (torque disabled), 1 (torque enabled), cuando torque enabled, eeprom es bloqueado
-		comwrite(self.uart,ID,TORQUE_ENABLE,[status])
+#==================================EEPROM=========================================
 
-	def controlmode(self,ID, mode): # 1 (wheel), 2 (joint)
-		comwrite(self.uart,ID,CONTROL_MODE,[mode])
+	def set_control_mode(self,ID, mode): # 1 (wheel), 2 (joint)
+		comwrite(self.uart,ID,XL320_CONTROL_MODE,[mode])
 
-	def goalspeed(self, ID, speed):
-		comwrite(self.uart,ID,GOAL_VELOCITY,le(speed))
+	def set_id(self,ID,newID):
+		comwrite(self.uart,ID,XL320_ID,[newID])
 
-	def goalposition(self, ID, position):
-		comwrite(self.uart,ID,GOAL_POSITION,le(int(position/300*1023)))
+	def set_baudrate(self,ID,baudrate):
+		comwrite(self.uart,ID,XL320_BAUD_RATE,[baudrate])
 
-	def setid(self,ID,newID):
-		comwrite(self.uart,ID,ID)
+	def set_cw_angle_limit(self,ID,angle):
+		comwrite(self.uart,ID,XL320_CW_ANGLE_LIMIT,le(int(angle/300*1023)))
+
+	def set_ccw_angle_limit(self,ID,angle):
+		comwrite(self.uart,ID,XL320_CCW_ANGLE_LIMIT,le(int(angle/300*1023)))
+
+	def set_max_torque(self,ID,torque):
+		comwrite(self.uart,ID,XL320_MAX_TORQUE,le(torque))
+
+#========================RAM======================================================
+
+	def torque_enable(self, ID, status): #default 0 (torque disabled), 1 (torque enabled), cuando torque enabled, eeprom es bloqueado
+		comwrite(self.uart,ID,XL320_TORQUE_ENABLE,[status])
+
+	def goal_speed(self, ID, speed):
+		comwrite(self.uart,ID,XL320_GOAL_VELOCITY,le(speed))
+
+	def goal_position(self, ID, position):
+		comwrite(self.uart,ID,XL320_GOAL_POSITION,le(int(position/300*1023)))
+
+	def goal_torque(self,ID,torque):
+		comwrite(self.uart,ID,XL320_GOAL_TORQUE,le(1023))
 
 #---------------------METODO ESPECIFICOS LECTURA----------------------------------
 	def readposition(self, ID):
