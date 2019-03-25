@@ -178,32 +178,87 @@ class xl320(object):
 	def goal_torque(self,ID,torque):
 		comwrite(self.uart,ID,XL320_GOAL_TORQUE,le(1023))
 
+
 #---------------------METODO ESPECIFICOS LECTURA----------------------------------
 #==================================EEPROM=========================================
 
 	def read_model_number(self,ID):
 		comread(self.uart,ID,XL320_MODEL_NUMBER,le(2))
 
+	def read_firmware(self,ID):
+		comread(self.uart,ID,XL320_VER_FIRMWARE,le(1))
 
 	def read_baudrate(self,ID):
 		comread(self.uart,ID,XL320_BAUD_RATE,le(1))
+
+	def read_delay_time(self,ID):
+		comread(self.uart,ID,XL320_DELAY_TIME,le(1))
+
+	def read_cw_angle_limit(self,ID):
+		comread(self.uart,ID,XL320_CW_ANGLE_LIMIT,le(2))
+
+	def read_ccw_angle_limit(self,ID):
+		comread(self.uart,ID,XL320_CCW_ANGLE_LIMIT,le(2))
 	
-	def read_controlmode(self, ID):
+	def read_control_mode(self, ID):
 		comread(self.uart,ID,XL320_CONTROL_MODE,le(1))
+
+	def read_max_torque(self,ID):
+		comread(self.uart,ID,XL320_MAX_TORQUE,le(2))
+
+	def read_return_level(self,ID):
+		comread(self.uart,ID,XL320_RETURN_LEVEL,le(1))
 
 
 #========================RAM======================================================
+	def read_torque_enable(self,ID):
+		comread(self.uart,ID,XL320_TORQUE_ENABLE,le(1))
+
+	def read_goal_torque(self,ID):
+		comread(self.uart,ID,XL320_GOAL_TORQUE,le(2))
 
 	def read_position(self, ID):
 		comread(self.uart,ID,XL320_PRESENT_POSITION,le(2))
 
-	def read_goalspeed(self,ID):
+	def read_goal_speed(self,ID):
 		comread(self.uart,ID,XL320_GOAL_VELOCITY,le(2))
 
+	def read_present_position(self,ID):
+		comread(self.uart,ID,XL320_PRESENT_POSITION,le(2))
 
-#-------------------OTROS METODOS-------------------------------------------------
+	def read_present_speed(self,ID):
+		comread(self.uart,ID,XL320_PRESENT_SPEED,le(2))
 
-#--------------------METODOS GENERICOS--------------------------------------
+	def read_present_load(self,ID):
+		comread(self.uart,ID,XL320_PRESENT_LOAD,le(2))
+
+	def read_present_voltage(self,ID):
+		comread(self.uart,ID,XL320_PRESENT_VOLTAGE,le(1))
+
+	def read_present_temperatura(self,ID):
+		comread(self.uart,ID,XL320_PRESENT_TEMP,le(1))
+
+	def read_moving(self,ID):
+		comread(self.uart,ID,XL320_MOVING,le(1))
+
+	def read_hw_error_status(self,ID):
+		comread(self.uart,ID,XL320_HW_ERROR_STATUS,le(1))
+
+	def read_punch(self,ID):
+		comread(self.uart,ID,XL320_PUNCH,le(2))
+
+#================================OTROS METODOS====================================
+
+	def reset_all(self,ID):
+		comwrite(self.uart,ID,XL320_RESET_ALL)
+
+	def reset_all_id(self,ID):
+		comwrite(self.uart,ID,XL320_RESET_ALL_BUT_ID)
+
+	def reset_all_id_baud(self,ID):
+		comwrite(self.uart,ID,XL320_RESET_ALL_BUT_ID_BAUD_RATE)
+
+#===============================METODOS GENERICOS==================================
 def comwrite(com, ID, reg=None, params=None):
 		try:
 			pkt=bytearray(makePacket(ID, WRITE, reg, params))
