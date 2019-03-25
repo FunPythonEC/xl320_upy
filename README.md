@@ -37,9 +37,13 @@ dxl=xl320(baudrate=15200,serialid=1)
 ~~~~
 
 ### Métodos
+Para la clase se han creado una serie de metodos especificos para su uso. En los cuales se usan funciones encontradas en el mismo script. Como le() y makePacket().
+
+Los metodos especificos, son para el control sobre el ID, baudrate, goal speed, present speed, etc. Pero también se agrego un metodo llamado sendPacket() el cual es un método genérico, este es más detallado en la próxima sección.
 #### Genéricos
-##### write
-##### read
+##### sendPacket()
+Este metodo del objeto, esta principalmente para poder enviar por UART, un paquete propio creado.
+Para la creación de un paquete se puede usar el metodo de `makePacket(ID, instr, reg=None, params=None)`, el cual regresa un array con los valores a enviar por serial.
 #### Especificos de escritura
 #### Especificos de lectura
 
