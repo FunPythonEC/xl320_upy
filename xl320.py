@@ -97,8 +97,10 @@ crc_table = [
 	0x8213, 0x0216, 0x021C, 0x8219, 0x0208, 0x820D, 0x8207, 0x0202
 ]
 
+#cabecera definida para todos los paquetes
 HEADER = [0xFF, 0xFF, 0xFD, 0x00]
 
+#clase principal
 class xl320(object):
 	#constructor
 	def __init__(self, baudrate=1000000, serialid=2):
@@ -113,6 +115,7 @@ class xl320(object):
 		except Exception as e:
 			print(e)
 
+	#metodo generico para mandar un paquete, packet es la lista de los valores
 	def sendPacket(self,packet):
 		try:
 			self.uart.write(bytearray(packet))
@@ -233,15 +236,16 @@ class xl320(object):
 #================================OTROS METODOS====================================
 
 	def reset_all(self,ID):
-		comwrite(self.uart,ID,XL320_RESET_ALL)
+		comwrite(self.uart,ID,[XL320_RESET_ALL])
 
 	def reset_all_id(self,ID):
-		comwrite(self.uart,ID,XL320_RESET_ALL_BUT_ID)
+		comwrite(self.uart,ID,[XL320_RESET_ALL_BUT_ID])
 
 	def reset_all_id_baud(self,ID):
-		comwrite(self.uart,ID,XL320_RESET_ALL_BUT_ID_BAUD_RATE)
+		comwrite(self.uart,ID,[XL320_RESET_ALL_BUT_ID_BAUD_RATE])
 
 #===============================METODOS GENERICOS==================================
+#creacion del paquete de escritura y envio
 def comwrite(com, ID, reg=None, params=None):
 		try:
 			pkt=bytearray(makePacket(ID, WRITE, reg, params))
@@ -257,7 +261,7 @@ def comwrite(com, ID, reg=None, params=None):
 			if (utime.ticks_us()-a)>=1450:
 				break
 		
-
+#creacion del paquete de lectura y envio
 def comread(com, ID, reg, length):
 		try:
 			pkt=bytearray(makePacket(ID, READ, reg, length))
