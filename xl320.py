@@ -113,26 +113,9 @@ class xl320(object):
 		except Exception as e:
 			print(e)
 
-	#METODO GENERICO ESCRITURA
-	def write(self, ID, reg=None, params=None):
-
+	def sendPacket(self,packet):
 		try:
-			self.uart.write(bytearray(makePacket(ID, WRITE, reg, params)))
-		except Exception as e:
-			print(e)
-
-		time.sleep_us(500)
-		while True:
-			msg=self.uart.read()
-			if msg is not None and msg!=bytearray(pkt):
-				break
-		print(msg)
-
-	#METODO GENERICO LECTURA
-	def read(self, ID, reg, length):
-
-		try:
-			self.uart.write(bytearray(makePacket(ID, READ, reg, le(length))))
+			self.uart.write(bytearray(packet))
 		except Exception as e:
 			print(e)
 
