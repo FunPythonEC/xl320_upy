@@ -56,7 +56,7 @@ Tener en cuenta que en el ejemplo anterior, se hace un cambio de id, el cual es 
 ##### EEPROM
 Tener en cuenta que para que el EEPROM sea modificable, es necesario que TORQUE_ENABLE tenga 0 como valor, si es cambiado a 1, EEPROM no puede ser modificado.
 |Metodo|Descripcion de parametros|
-|:-----------|:--------------------------------------|
+|-----------|--------------------------------------|
 |set_control_mode(ID, mode)| **ID**: corresponde al id del motor al cual se le quiere cambiar el modo. Puede ser un valor desde 1 hasta 253. **mode**: puede ser 1 o 2. 1 para el modo WHEEL y 2 para JOINT|
 |set_id(ID,newID)| **ID**: es el id del motor al que se le cambiara. **newID**: es el nuevo ID que se sobreescribira|
 |set_baudrate(ID,baudrate)| **baudrate**:los valores van desde 0 a 3. Cada uno especificando un valor de baudios tal y como se muestra en la documentación del motor, que puede ser desde 9600 hasta 1000000. |
