@@ -65,6 +65,12 @@ Tener en cuenta que para que el EEPROM sea modificable, es necesario que TORQUE_
 |set_max_torque(ID,torque)| **torque**: el valor puede variar de 0 a 1023, siendo 1023 el máximo de torque que es capaz de ejercer el motor. |
 
 ##### RAM
+
+|Metodo|Descripción de parámetros|
+|------------|---------------------------------------|
+|torque_enable(ID,status)|**status**: el valor puede ser 1 (wheel mode) o 2 (joint mode).|
+
+
 #### Especificos de lectura
 ##### EEPROM
 ##### RAM
