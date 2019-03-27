@@ -56,25 +56,62 @@ Tener en cuenta que en el ejemplo anterior, se hace un cambio de id, el cual es 
 ##### EEPROM
 Tener en cuenta que para que el EEPROM sea modificable, es necesario que TORQUE_ENABLE tenga 0 como valor, si es cambiado a 1, EEPROM no puede ser modificado.
 
-|Metodo|Descripcion de parametros|
-|-----------|--------------------------------------|
-|set_control_mode(ID, mode)|**ID**: corresponde al id del motor al cual se le quiere cambiar el modo. Puede ser un valor desde 1 hasta 253. **mode**: puede ser 1 o 2. 1 para el modo WHEEL y 2 para JOINT|
-|set_id(ID,newID)|**ID**: es el id del motor al que se le cambiara. **newID**: es el nuevo ID que se sobreescribira|
-|set_baudrate(ID,baudrate)|**baudrate**:los valores van desde 0 a 3. Cada uno especificando un valor de baudios tal y como se muestra en la documentación del motor, que puede ser desde 9600 hasta 1000000.|
-|set_cw_angle_limit(ID,angle)|**angle**: en este caso, por las capacidades del motor xl320, el valor de angulos para el cual permite el giro funcionando como un servo motor (JOINT mode) es desde 0 hasta 300 grados.|
-|set_ccw_angle_limit(ID, angle)|**angle**: en este caso, por las capacidades del motor xl320, el valor de angulos para el cual permite el giro funcionando como un servo motor (JOINT mode) es desde 0 hasta 300 grados.|
-|set_max_torque(ID,torque)|**torque**: el valor puede variar de 0 a 1023, siendo 1023 el máximo de torque que es capaz de ejercer el motor.|
+|Metodo|¿Qué hace?|Descripcion de parametros|
+|-----------|-----------|--------------------------------------|
+|set_control_mode(ID, mode)|Ayuda a setear el modo de control del motor.|**ID**: corresponde al id del motor al cual se le quiere cambiar el modo. Puede ser un valor desde 1 hasta 253. **mode**: puede ser 1 o 2. 1 para el modo WHEEL y 2 para JOINT|
+|set_id(ID,newID)|Ayuda a cambiar o setear un id nuevo a uno de los motores.|**ID**: es el id del motor al que se le cambiara. **newID**: es el nuevo ID que se sobreescribira|
+|set_baudrate(ID,baudrate)|Seteo de baud rate a uno de los motores.|**baudrate**:los valores van desde 0 a 3. Cada uno especificando un valor de baudios tal y como se muestra en la documentación del motor, que puede ser desde 9600 hasta 1000000.|
+|set_cw_angle_limit(ID,angle)|Seteo de ángulo límite para el movimiento del motor en sentido horario.|**angle**: en este caso, por las capacidades del motor xl320, el valor de angulos para el cual permite el giro funcionando como un servo motor (JOINT mode) es desde 0 hasta 300 grados.|
+|set_ccw_angle_limit(ID, angle)|Seteo de ángulo límite para el movimiento del motor en sentido antihorario.|**angle**: en este caso, por las capacidades del motor xl320, el valor de angulos para el cual permite el giro funcionando como un servo motor (JOINT mode) es desde 0 hasta 300 grados.|
+|set_max_torque(ID,torque)|Seteo de torque máximo que puede ejercer el motor.|**torque**: el valor puede variar de 0 a 1023, siendo 1023 el máximo de torque que es capaz de ejercer el motor.|
 
 ##### RAM
 
-|Metodo|Descripción de parámetros|
-|------------|---------------------------------------|
-|torque_enable(ID,status)|**status**: el valor puede ser 1 (wheel mode) o 2 (joint mode).|
-
+|Metodo|¿Qué hace?|Descripción de parámetros|
+|:-----------|------------|---------------------------------------|
+|torque_enable(ID,status)|Deshabilita o habilita el torque.|**status**: el valor puede ser 1 (wheel mode) o 2 (joint mode).|
+|goal_speed(ID,speed)|Pone una velocidad definida a la que se mueva el motor, funciona diferente dependiendo del modo de control en el que se encuentre.|**speed**: (JOINT) para este caso speed se refiere a la velocidad a la que girará el motor cuando se le especifique un ángulo, su valor puede ser entre 0-1023. (WHEEL) en este caso, se refiere a la velocidad a la que se quiere que se mueva el motor actualmente, su valor puede ser entre 0-2047. 0-1023 para que gire en un sentido. 1024-2047 para el otro.|
+|goal_position(ID,position)|Coloca al motor en una posición definida que se da por el ángulo como posición.|**position**: corresponde al ángulo en que se quiere que se ponga el motor.|
+|goal_torque(ID, torque)|Setea el torque en un valor definido.|**torque**: su valor es entre 0-1023, siendo 1023 el valor máximo.|
 
 #### Especificos de lectura
+
+Todos los metodos de lectura tiene como parámetro nada más que el ID, por lo que no se explica a continucación, solo que hace cada metodo.
+
+Tener en cuenta que todos los metodos de lectura, al usarlos, por ahora imprimen todo lo que le llega al microcontrolador. Se tiene que entonces identificar que generalmente el unico print que se mostraría es lo que envia como respuesta el motor. Lo cual correspondera a un paquete del cual se tendrá que identificar los valores regresados.
+
 ##### EEPROM
+
+| Metodos                  | ¿Qué hace?                                                   |
+| ------------------------ | ------------------------------------------------------------ |
+| read_model_number(ID)    | Lectura el numero de modelo del motor.                       |
+| read_firmware(ID)        | Lectura el firmware que tiene el motor.                      |
+| read_baudrate(ID)        | Lectura el valor de baud rate con el que esta trabajando el motor para la comunicación. |
+| read_delay_time(ID)      | Lectura el tiempo de delay entre escritura y respuesta. **Todavia no esta implementado el metodo para el cambio de delay time** |
+| read_cw_angle_limit(ID)  | Lectura de angulo limite para el giro horario.               |
+| read_ccw_angle_limit(ID) | Lectura de angulo limite para el giro anti-horario.          |
+| read_control_mode(ID)    | Lectura de modo de control actual.                           |
+| read_max_torque(ID)      | Lectura de torque máximo al cual ha sido seteado el motor.   |
+| read_return_level(ID)    | Lectura de nivel de retorno en el motor.                     |
+
 ##### RAM
+| Metodos                      | ¿Qué hace?                                                   |
+| ---------------------------- | ------------------------------------------------------------ |
+| read_torque_enable(ID)       | Lectura del estado de torque, si esta activado o no.         |
+| read_goal_torque(ID)         | Lectura de el valor de torque al que se haya seteado el motor. |
+| read_goal_speed(ID)          | Lectura del valor de goal speed puesto.                      |
+| read_present_position(ID)    | Lectura de la posición actual del motor.                     |
+| read_present_speed(ID)       | Lectura de la velocidad actual del motor.                    |
+| read_present_load(ID)        | Lectura del peso o fuerza ejercida por el motor.             |
+| read_present_voltage(ID)     | Lectura del voltage presente suministrado al motor.          |
+| read_present_temperature(ID) | Lectura de temperatura actual del motor.                     |
+| read_moving(ID)              | Lectura de estado del motor, para saber si esta o no en movimiento. |
+| read_hw_error_status(ID)     | Lectura de estado de error de hardware.                      |
+| read_goal_position(ID)       | Lectura de valor de goal position indicado.                  |
+| read_punch(ID)               | Lectura de minima corriente suministrada al motor.           |
+
+
+
 
 
 ## Referencias
