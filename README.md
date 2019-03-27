@@ -44,33 +44,31 @@ Los metodos especificos, son para el control sobre el ID, baudrate, goal speed, 
 ##### sendPacket()
 Este metodo del objeto, esta principalmente para poder enviar por UART, un paquete propio creado.
 Para la creación de un paquete se puede usar el metodo de `makePacket(ID, instr, reg=None, params=None)`, el cual regresa un array con los valores a enviar por serial.
+###### Ejemplo
+~~~~ python
+from xl320 import *
+dxl=xl320()
+#cambio de id, de 1 a 2
+pkt=makePacket(1,WRITE,XL320_ID,[2])
+~~~~
+Tener en cuenta que en el ejemplo anterior, se hace un cambio de id, el cual es un registro al cual le corresponde 1 byte, por lo que en el metodo basta con poner como parametro [2], mientras que si este fuera de 2 bytes, se tendria que usar el metodo le() que se encuentra en el mismo script. Basicamente el metodo le() se encarga de representar un numero mayor a 255 en dos bytes.
 #### Especificos de escritura
+##### EEPROM
+Tener en cuenta que para que el EEPROM sea modificable, es necesario que TORQUE_ENABLE tenga 0 como valor, si es cambiado a 1, EEPROM no puede ser modificado.
+|Metodo|Descripcion de parametros|
+|------------|:--------------------------------------|
+|set_control_mode(ID, mode)| **ID**: corresponde al id del motor al cual se le quiere cambiar el modo. Puede ser un valor desde 1 hasta 253. **mode**: puede ser 1 o 2. 1 para el modo WHEEL y 2 para JOINT|
+|| |
+|| |
+|| |
+|| |
+|| |
+
+##### RAM
 #### Especificos de lectura
+##### EEPROM
+##### RAM
 
-### Desde aquí para abajo todavía se necesita actualizar la documentación
-
-Revisar el script xl320.py para entender con anticipación.
-
-#### write(ID, reg=None, params=None) (metodo genérico para escritura a RAM o EEPROM)
-Por default se tiene como instrucción que sea escritura, corresponde a 0x03
-* ID: es definido como entero desde 1-253, con 254 se hace un broadcast
-* reg: registro, dependiendo de lo que se quiera hacer, definidos al inicio de `xl320.py`
-* params: si el registro recibe parametros de 1 byte, se puede definir el valor como un entero, sino se debe especificar como le(valor)
-Para más información: http://emanual.robotis.com/docs/en/dxl/x/xl320/
-
-### torqueenable(ID, status)
-* status: puede ser 0 o 1. 0 deshabilita el torque, 1 lo habilita. Si status=1 y el torque es habilitado, la memoria EEPROM se bloquea, y no puede ser modificada hasta que sea deshabilitado el torque.
-
-### controlmode(ID, mode)
-* mode: puede ser 1 o 2. Si es 1 (wheel) o 2 (joint)
-
-### goalspeed(ID, speed)
-* speed:
-	* Modo wheel: modifica a que velocidad se mueve el motor.
-	* Modo joint: modifica que tan rapido gira cuando se cambia su posición o ángulo.
-
-### goalposition(ID, position)
-* position: angulo en que se quiere el servo. Debe estar en modo joint para funcionar.
 
 ## Referencias
 * [XL320 Dynamixel](http://emanual.robotis.com/docs/en/dxl/x/xl320/)
