@@ -203,8 +203,8 @@ class xl320(object):
 	def read_goal_torque(self,ID):
 		comread(self.uart,ID,XL320_GOAL_TORQUE,le(2))
 
-	def read_position(self, ID):
-		comread(self.uart,ID,XL320_PRESENT_POSITION,le(2))
+	def read_goal_position(self, ID):
+		comread(self.uart,ID,XL320_GOAL_POSITION,le(2))
 
 	def read_goal_speed(self,ID):
 		comread(self.uart,ID,XL320_GOAL_VELOCITY,le(2))
@@ -221,7 +221,7 @@ class xl320(object):
 	def read_present_voltage(self,ID):
 		comread(self.uart,ID,XL320_PRESENT_VOLTAGE,le(1))
 
-	def read_present_temperatura(self,ID):
+	def read_present_temperature(self,ID):
 		comread(self.uart,ID,XL320_PRESENT_TEMP,le(1))
 
 	def read_moving(self,ID):
