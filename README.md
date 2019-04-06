@@ -9,6 +9,9 @@ Para la comunicación se utiliza UART. A pesar de que los motores dynamixel para
 
 Para su uso en la parte de programación, se ha especificado en el constructor de `xl320()`, el id de UART a usar que es especificado como serialid, ya que ciertas placas carecen de cierta cantidad de objetos UART para crear. Correspondiendo entonces serialid al numero de UART usado en el microcontrolador.  Para más información de UART con uPy: [UART MicroPython](https://docs.micropython.org/en/latest/library/machine.UART.html)
 
+## Video
+[Moviendo un Dynamixel XL320 con un ESP-01](https://drive.google.com/file/d/1Kv3WGl3ykeTJ5h9S8OCWee8K0cMC2VE8/view?usp=sharing)
+
 ## `XL320.PY`
 
 En este script se ha incluido todo lo necesario para poder hacer uso del motor. En este se puede encontrar la clase `xl320` con su respectivo constructor y metodos. Su uso es especificado a continuación
