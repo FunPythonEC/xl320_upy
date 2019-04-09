@@ -103,10 +103,11 @@ HEADER = [0xFF, 0xFF, 0xFD, 0x00]
 #clase principal
 class xl320(object):
 	#constructor
-	def __init__(self, baudrate=1000000, serialid=2):
+	def __init__(self, dir_com, baudrate=1000000, serialid=2):
 		
 		self.baudrate=baudrate
 		self.serialid=serialid
+		self.dir_com=m.Pin(dir_com,m.Pin.OUT)
 
 		#definicion de objeto serial
 		try:
@@ -117,17 +118,24 @@ class xl320(object):
 
 	#metodo generico para mandar un paquete, packet es la lista de los valores
 	def sendPacket(self,packet):
+		self.dir_com.value(1)
+		
 		try:
 			self.uart.write(bytearray(packet))
+			a=utime.ticks_us()
 		except Exception as e:
 			print(e)
 
-		time.sleep_us(500)
+		self.dir_com.value(0)
+
 		while True:
-			msg=self.uart.read()
-			if msg is not None and msg!=bytearray(pkt):
+			msg=com.read()
+			if msg is not None:
+				print(list(msg))
+				return list(msg)
+			if (utime.ticks_us()-a)>=1450:
 				break
-		print(msg)
+		
 
 #----------------------METODOS ESPECIFICOS ESCRITURA------------------------------
 #==================================EEPROM=========================================
@@ -254,6 +262,7 @@ def comwrite(com, ID, reg=None, params=None):
 			time.sleep_us(500)
 		except Exception as e:
 			print(e)
+
 		while True:
 			msg=com.read()
 			if msg is not None:
