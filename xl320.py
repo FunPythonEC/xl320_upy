@@ -126,12 +126,12 @@ class xl320(object):
 		except Exception as e:
 			print(e)
 
-		time.sleep_us(450)
+		time.sleep_us(325)
 		self.dir_com.value(0)
 
 		while True:
 			msg=com.read()
-			if msg is not None:
+			if msg is not None and (utime.ticks_us()-a)>=1450:
 				print(list(msg))
 				return list(msg)
 			if (utime.ticks_us()-a)>=1450:
@@ -286,7 +286,7 @@ def comwrite(com, dir_com, ID, reg=None, params=None):
 		except Exception as e:
 			print(e)
 
-		time.sleep_us(450)
+		time.sleep_us(325)
 		dir_com.value(0)
 
 		while True:
@@ -304,19 +304,27 @@ def comread(com,dir_com, ID, reg, length):
 		try:
 			pkt=bytearray(makePacket(ID, READ, reg, length))
 			com.write(pkt)
-			a=utime.ticks_us()
 		except Exception as e:
 			print(e)
 
-		time.sleep_us(450)
+		time.sleep_us(325)
 		dir_com.value(0)
-		
+		a=utime.ticks_us()
+		data=[]
+
 		while True:
-			msg=com.read()
+			msg=com.read(13)
+
 			if msg is not None:
-				print(list(msg))
-				return list(msg)
-			if (utime.ticks_us()-a)>=1450:
+				data+=list(msg)
+
+			try:
+				if data[5]==(len(data)-7):
+					print(data)
+					return data
+			except:
+			if (utime.ticks_us()-a)>=2000:
+
 				break
 
 def makePacket(ID, instr, reg=None, params=None):
