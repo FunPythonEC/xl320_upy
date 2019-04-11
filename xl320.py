@@ -117,15 +117,16 @@ class xl320(object):
 			print(e)
 
 	#metodo generico para mandar un paquete, packet es la lista de los valores
-	def sendPacket(self,packet):
+	def sendPacket(self, packet):
 		self.dir_com.value(1)
-		
+
 		try:
 			self.uart.write(bytearray(packet))
 			a=utime.ticks_us()
 		except Exception as e:
 			print(e)
 
+		time.sleep_us(450)
 		self.dir_com.value(0)
 
 		while True:
@@ -141,148 +142,180 @@ class xl320(object):
 #==================================EEPROM=========================================
 
 	def set_control_mode(self,ID, mode): # 1 (wheel), 2 (joint)
-		comwrite(self.uart,ID,XL320_CONTROL_MODE,[mode])
+		comwrite(self.uart,self.dir_com,ID,XL320_CONTROL_MODE,[mode])
 
 	def set_id(self,ID,newID):
-		comwrite(self.uart,ID,XL320_ID,[newID])
+		comwrite(self.uart,self.dir_com,ID,XL320_ID,[newID])
 
 	def set_baudrate(self,ID,baudrate):
-		comwrite(self.uart,ID,XL320_BAUD_RATE,[baudrate])
+		comwrite(self.uart,self.dir_com,ID,XL320_BAUD_RATE,[baudrate])
 
 	def set_cw_angle_limit(self,ID,angle):
-		comwrite(self.uart,ID,XL320_CW_ANGLE_LIMIT,le(int(angle/300*1023)))
+		comwrite(self.uart,self.dir_com,ID,XL320_CW_ANGLE_LIMIT,le(int(angle/300*1023)))
 
 	def set_ccw_angle_limit(self,ID,angle):
-		comwrite(self.uart,ID,XL320_CCW_ANGLE_LIMIT,le(int(angle/300*1023)))
+		comwrite(self.uart,self.dir_com,ID,XL320_CCW_ANGLE_LIMIT,le(int(angle/300*1023)))
 
 	def set_max_torque(self,ID,torque):
-		comwrite(self.uart,ID,XL320_MAX_TORQUE,le(torque))
+		comwrite(self.uart,self.dir_com,ID,XL320_MAX_TORQUE,le(torque))
 
 #========================RAM======================================================
 
 	def torque_enable(self, ID, status): #default 0 (torque disabled), 1 (torque enabled), cuando torque enabled, eeprom es bloqueado
-		comwrite(self.uart,ID,XL320_TORQUE_ENABLE,[status])
+		comwrite(self.uart,self.dir_com,ID,XL320_TORQUE_ENABLE,[status])
 
 	def goal_speed(self, ID, speed):
-		comwrite(self.uart,ID,XL320_GOAL_VELOCITY,le(speed))
+		comwrite(self.uart,self.dir_com,ID,XL320_GOAL_VELOCITY,le(speed))
 
 	def goal_position(self, ID, position):
-		comwrite(self.uart,ID,XL320_GOAL_POSITION,le(int(position/300*1023)))
+		comwrite(self.uart,self.dir_com,ID,XL320_GOAL_POSITION,le(int(position/300*1023)))
 
 	def goal_torque(self,ID,torque):
-		comwrite(self.uart,ID,XL320_GOAL_TORQUE,le(1023))
+		comwrite(self.uart,self.dir_com,ID,XL320_GOAL_TORQUE,le(1023))
 
 
 #---------------------METODO ESPECIFICOS LECTURA----------------------------------
 #==================================EEPROM=========================================
 
 	def read_model_number(self,ID):
-		comread(self.uart,ID,XL320_MODEL_NUMBER,le(2))
+		data=comread(self.uart,self.dir_com,ID,XL320_MODEL_NUMBER,le(2))
+		return word(data[-4],data[-3])
 
 	def read_firmware(self,ID):
-		comread(self.uart,ID,XL320_VER_FIRMWARE,le(1))
+		data=comread(self.uart,self.dir_com,ID,XL320_VER_FIRMWARE,le(1))
+		return data[-3]
 
 	def read_baudrate(self,ID):
-		comread(self.uart,ID,XL320_BAUD_RATE,le(1))
+		data=comread(self.uart,self.dir_com,ID,XL320_BAUD_RATE,le(1))
+		return data[-3]
 
 	def read_delay_time(self,ID):
-		comread(self.uart,ID,XL320_DELAY_TIME,le(1))
+		data=comread(self.uart,self.dir_com,ID,XL320_DELAY_TIME,le(1))
+		return data[-3]
 
 	def read_cw_angle_limit(self,ID):
-		comread(self.uart,ID,XL320_CW_ANGLE_LIMIT,le(2))
+		data=comread(self.uart,self.dir_com,ID,XL320_CW_ANGLE_LIMIT,le(2))
+		return word(data[-4],data[-3])*300/1023
 
 	def read_ccw_angle_limit(self,ID):
-		comread(self.uart,ID,XL320_CCW_ANGLE_LIMIT,le(2))
+		data=comread(self.uart,self.dir_com,ID,XL320_CCW_ANGLE_LIMIT,le(2))
+		return word(data[-4],data[-3])*300/1023
 	
 	def read_control_mode(self, ID):
-		comread(self.uart,ID,XL320_CONTROL_MODE,le(1))
+		data=comread(self.uart,self.dir_com,ID,XL320_CONTROL_MODE,le(1))
+		return data[-3]
 
 	def read_max_torque(self,ID):
-		comread(self.uart,ID,XL320_MAX_TORQUE,le(2))
+		data=comread(self.uart,self.dir_com,ID,XL320_MAX_TORQUE,le(2))
+		return word(data[-4],data[-3])
 
 	def read_return_level(self,ID):
-		comread(self.uart,ID,XL320_RETURN_LEVEL,le(1))
+		data=comread(self.uart,self.dir_com,ID,XL320_RETURN_LEVEL,le(1))
+		return data[-3]
 
 
 #========================RAM======================================================
 	def read_torque_enable(self,ID):
-		comread(self.uart,ID,XL320_TORQUE_ENABLE,le(1))
+		data=comread(self.uart,self.dir_com,ID,XL320_TORQUE_ENABLE,le(1))
+		return data[-3]
 
 	def read_goal_torque(self,ID):
-		comread(self.uart,ID,XL320_GOAL_TORQUE,le(2))
+		data=comread(self.uart,self.dir_com,ID,XL320_GOAL_TORQUE,le(2))
+		return word(data[-4],data[-3])
 
 	def read_goal_position(self, ID):
-		comread(self.uart,ID,XL320_GOAL_POSITION,le(2))
+		data=comread(self.uart,self.dir_com,ID,XL320_GOAL_POSITION,le(2))
+		return word(data[-4],data[-3])*300/1023
 
 	def read_goal_speed(self,ID):
-		comread(self.uart,ID,XL320_GOAL_VELOCITY,le(2))
+		data=comread(self.uart,self.dir_com,ID,XL320_GOAL_VELOCITY,le(2))
+		return word(data[-4],data[-3])
 
 	def read_present_position(self,ID):
-		comread(self.uart,ID,XL320_PRESENT_POSITION,le(2))
+		data=comread(self.uart,self.dir_com,ID,XL320_PRESENT_POSITION,le(2))
+		return word(data[-4],data[-3])*300/1023
 
 	def read_present_speed(self,ID):
-		comread(self.uart,ID,XL320_PRESENT_SPEED,le(2))
+		data=comread(self.uart,self.dir_com,ID,XL320_PRESENT_SPEED,le(2))
+		return word(data[-4],data[-3])
 
 	def read_present_load(self,ID):
-		comread(self.uart,ID,XL320_PRESENT_LOAD,le(2))
+		data=comread(self.uart,self.dir_com,ID,XL320_PRESENT_LOAD,le(2))
+		return word(data[-4],data[-3])
 
 	def read_present_voltage(self,ID):
-		comread(self.uart,ID,XL320_PRESENT_VOLTAGE,le(1))
+		data=comread(self.uart,self.dir_com,ID,XL320_PRESENT_VOLTAGE,le(1))
+		return data[-3]
 
 	def read_present_temperature(self,ID):
-		comread(self.uart,ID,XL320_PRESENT_TEMP,le(1))
+		data=comread(self.uart,self.dir_com,ID,XL320_PRESENT_TEMP,le(1))
+		return data[-3]
 
 	def read_moving(self,ID):
-		comread(self.uart,ID,XL320_MOVING,le(1))
+		data=comread(self.uart,self.dir_com,ID,XL320_MOVING,le(1))
+		return data[-3]
 
 	def read_hw_error_status(self,ID):
-		comread(self.uart,ID,XL320_HW_ERROR_STATUS,le(1))
+		data=comread(self.uart,self.dir_com,ID,XL320_HW_ERROR_STATUS,le(1))
+		return data[-3]
 
 	def read_punch(self,ID):
-		comread(self.uart,ID,XL320_PUNCH,le(2))
+		data=comread(self.uart,self.dir_com,ID,XL320_PUNCH,le(2))
+		return word(data[-4],data[-3])
 
 #================================OTROS METODOS====================================
 
 	def reset_all(self,ID):
-		comwrite(self.uart,ID,[XL320_RESET_ALL])
+		comwrite(self.uart,self.dir_com,ID,[XL320_RESET_ALL])
 
 	def reset_all_id(self,ID):
-		comwrite(self.uart,ID,[XL320_RESET_ALL_BUT_ID])
+		comwrite(self.uart,self.dir_com,ID,[XL320_RESET_ALL_BUT_ID])
 
 	def reset_all_id_baud(self,ID):
-		comwrite(self.uart,ID,[XL320_RESET_ALL_BUT_ID_BAUD_RATE])
+		comwrite(self.uart,self.dir_com,ID,[XL320_RESET_ALL_BUT_ID_BAUD_RATE])
 
 #===============================METODOS GENERICOS==================================
 #creacion del paquete de escritura y envio
-def comwrite(com, ID, reg=None, params=None):
+def comwrite(com, dir_com, ID, reg=None, params=None):
+		dir_com.value(1)
+
 		try:
 			pkt=bytearray(makePacket(ID, WRITE, reg, params))
 			com.write(pkt)
 			a=utime.ticks_us()
-			time.sleep_us(500)
 		except Exception as e:
 			print(e)
+
+		time.sleep_us(450)
+		dir_com.value(0)
 
 		while True:
 			msg=com.read()
 			if msg is not None:
-				print(msg)
+				print(list(msg))
+				return list(msg)
 			if (utime.ticks_us()-a)>=1450:
 				break
 		
 #creacion del paquete de lectura y envio
-def comread(com, ID, reg, length):
+def comread(com,dir_com, ID, reg, length):
+		dir_com.value(1)
+
 		try:
 			pkt=bytearray(makePacket(ID, READ, reg, length))
 			com.write(pkt)
 			a=utime.ticks_us()
-			time.sleep_us(500)
 		except Exception as e:
 			print(e)
+
+		time.sleep_us(450)
+		dir_com.value(0)
+		
 		while True:
 			msg=com.read()
 			if msg is not None:
-				print(msg)
+				print(list(msg))
+				return list(msg)
 			if (utime.ticks_us()-a)>=1450:
 				break
 
@@ -325,6 +358,12 @@ def le(h):
 	"""
 	h &= 0xffff  # make sure it is 16 bits
 	return [h & 0xff, h >> 8]
+
+def word(l, h):
+	"""
+	Given a low and high bit, converts the number back into a word.
+	"""
+	return (h << 8) + l
 
 def crc16(data_blk):
 	"""
