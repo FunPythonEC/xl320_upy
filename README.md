@@ -3,6 +3,9 @@ Los scripts en este repositorio han sido creados a partir del siguiente: https:/
 
 Se encuentra aquí el script de `xl320.py`, el cual contiene la clase `xl320`, los metodos y funciones necesarios para poder dar uso de los motores dynamixel xl320 eficaz y rapidamente con MicroPython, especificamente para los microcontroladores ESP8266 y ESP32.
 
+## Hardware
+Debido a que los microcontroladores ESP soportan una comunicación por UART mientras los motores Dynamixel es OneWire, es necesario un hardware especifico que te permita esta interfaz para la comunicación de los distintos protocolos, para ello se esta diseñando en el siguiente repositorio el hardware necesario: [OpenFPy](https://github.com/FunPythonEC/OpenFpy)
+
 ## Comunicación con el motor
 
 Para la comunicación se utiliza UART. A pesar de que los motores dynamixel para la comunicación utilizan un pin DATA, este ha sido manejado usando una configuración de transistores especificada en el siguiente link: [UART to 1-WIRE interface](https://hackaday.com/2015/01/29/easier-uart-to-1-wire-interface/)
