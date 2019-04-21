@@ -19,12 +19,17 @@ Para su uso en la parte de programación, se ha especificado en el constructor d
 
 En este script se ha incluido todo lo necesario para poder hacer uso del motor. En este se puede encontrar la clase `xl320` con su respectivo constructor y metodos. Su uso es especificado a continuación
 
+### Diagrama Interfaz UART-To-1Wire
+
+![UART to 1-Wire](https://hackaday.com/wp-content/uploads/2015/01/onewire.png?w=800)
+
 ### Constructor
 
 ~~~~ python
-xl320(self, baudrate=1000000, serialid=2)
+xl320(self, dir_com, baudrate=1000000, serialid=2)
 ~~~~
 
+* dir_com: debido a la interface de UART-1Wire, para prevenir el fallo de lectura se utiliza un pin que especifica en que dirección se transmiten los datos, que es especificado con esta variable, que basicamente representa el pin con el que se manejara la dirección.
 * baudrate: define los baudios con el cual se utilizará el motor
 * serialid: define que pines tx, rx del ESP se usaran, por default UART(2)
 Tener en cuenta que hay valores especificados como default en el constructor de la clase, por lo que si se quiere unos distintos, este debe ser especficado. Además se permite la creación de distintos objetos para el uso de motores, en el caso del ESP32 se permite hasta 3 lineas de motores. Para el ESP8266 tan solo 2. Con linea de motores, se refiere a motores conectados en serie en distintos buses.
@@ -33,13 +38,13 @@ Tener en cuenta que hay valores especificados como default en el constructor de 
 
 ~~~~ python
 from xl320 import *
-dxl=xl320()
+dxl=xl320(dir_com=22) #dir_com=22 es la
 ~~~~
 
 Si se desea especificar el baudrate o el serial uart a usar:
 ~~~~ python
 from xl320 import *
-dxl=xl320(baudrate=15200,serialid=1)
+dxl=xl320(dir_com=22,baudrate=15200,serialid=1)
 ~~~~
 
 ### Métodos
@@ -53,7 +58,7 @@ Para la creación de un paquete se puede usar el metodo de `makePacket(ID, instr
 ###### Ejemplo
 ~~~~ python
 from xl320 import *
-dxl=xl320()
+dxl=xl320(dir_com=22)
 #cambio de id, de 1 a 2
 pkt=makePacket(1,WRITE,XL320_ID,[2])
 ~~~~
