@@ -8,9 +8,13 @@ Debido a que los microcontroladores ESP soportan una comunicación por UART mien
 
 ## Comunicación con el motor
 
-Para la comunicación se utiliza UART. A pesar de que los motores dynamixel para la comunicación utilizan un pin DATA, este ha sido manejado usando una configuración de transistores especificada en el siguiente link: [UART to 1-WIRE interface](https://hackaday.com/2015/01/29/easier-uart-to-1-wire-interface/)
+Para la comunicación se utiliza UART. A pesar de que los motores dynamixel para la comunicación utilizan un pin DATA, este puede ser manejado utilizando la siguiente configuración electrónica: [UART to 1-WIRE interface](https://hackaday.com/2015/01/29/easier-uart-to-1-wire-interface/)
 
 Para su uso en la parte de programación, se ha especificado en el constructor de `xl320()`, el id de UART a usar que es especificado como serialid, ya que ciertas placas carecen de cierta cantidad de objetos UART para crear. Correspondiendo entonces serialid al numero de UART usado en el microcontrolador.  Para más información de UART con uPy: [UART MicroPython](https://docs.micropython.org/en/latest/library/machine.UART.html)
+
+### Nota
+
+A pesar de que para controlar el motor se puede utilizar la configuracion de [UART to 1-WIRE interface](https://hackaday.com/2015/01/29/easier-uart-to-1-wire-interface/), para tener un sistema más robusto se ha utilizado lo siguiente [Robotis TTL Communication](http://emanual.robotis.com/docs/en/dxl/x/xl320/#ttl-communication). Para esta es necesario especificar la dirección en que se envian datos. Para lo cual en la clase `xl320()`se especifica un pin de dirección con el cual poder manejar si se envia o se recibe datos al ESP, lo cual es sumamente necesario para la lectura.
 
 ## Video
 [Moviendo un Dynamixel XL320 con un ESP-01](https://drive.google.com/file/d/1Kv3WGl3ykeTJ5h9S8OCWee8K0cMC2VE8/view?usp=sharing)
