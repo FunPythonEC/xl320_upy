@@ -323,9 +323,8 @@ def comread(com,dir_com, ID, reg, length):
 					print(data)
 					return data
 			except:
-			if (utime.ticks_us()-a)>=2000:
-
-				break
+				if (utime.ticks_us()-a)>=2000:
+					break
 
 def makePacket(ID, instr, reg=None, params=None):
 	"""
