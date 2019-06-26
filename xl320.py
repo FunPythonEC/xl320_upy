@@ -1,6 +1,7 @@
-import machine as m
-import time
-import utime
+
+import machine as m #for uart use
+import utime #for time control
+
 # --------- INSTRUCTIONS -----
 PING      = 0x01
 READ      = 0x02
@@ -62,6 +63,8 @@ XL320_57600                      = 1
 XL320_115200                     = 2
 XL320_1000000                    = 3
 
+#this table is needed in order to create the ultimate two values which correspond to only
+#the checksum of protocol 2.0
 crc_table = [
 	0x0000, 0x8005, 0x800F, 0x000A, 0x801B, 0x001E, 0x0014, 0x8011,
 	0x8033, 0x0036, 0x003C, 0x8039, 0x0028, 0x802D, 0x8027, 0x0022,
@@ -97,26 +100,26 @@ crc_table = [
 	0x8213, 0x0216, 0x021C, 0x8219, 0x0208, 0x820D, 0x8207, 0x0202
 ]
 
-#cabecera definida para todos los paquetes
+#header of the packet
 HEADER = [0xFF, 0xFF, 0xFD, 0x00]
 
-#clase principal
+#xl320 class for servo control
 class xl320(object):
 	#constructor
 	def __init__(self, dir_com, baudrate=1000000, serialid=2):
-		
+
 		self.baudrate=baudrate
 		self.serialid=serialid
-		self.dir_com=m.Pin(dir_com,m.Pin.OUT)
+		self.dir_com=m.Pin(dir_com,m.Pin.OUT) #a pin for the communication direction is defined
 
-		#definicion de objeto serial
+		#uart object defined
 		try:
 			self.uart = m.UART(self.serialid,self.baudrate)
 			self.uart.init(self.baudrate, bits=8, parity=None, stop=1)
 		except Exception as e:
 			print(e)
 
-	#metodo generico para mandar un paquete, packet es la lista de los valores
+	#generic methods to send packet -> this is a list of values
 	def sendPacket(self, packet):
 		self.dir_com.value(1)
 
@@ -126,7 +129,7 @@ class xl320(object):
 		except Exception as e:
 			print(e)
 
-		time.sleep_us(325)
+		utime.sleep_us(325)
 		self.dir_com.value(0)
 
 		while True:
@@ -286,7 +289,7 @@ def comwrite(com, dir_com, ID, reg=None, params=None):
 		except Exception as e:
 			print(e)
 
-		time.sleep_us(325)
+		utime.sleep_us(325)
 		dir_com.value(0)
 
 		while True:
@@ -307,7 +310,7 @@ def comread(com,dir_com, ID, reg, length):
 		except Exception as e:
 			print(e)
 
-		time.sleep_us(325)
+		utime.sleep_us(325)
 		dir_com.value(0)
 		a=utime.ticks_us()
 		data=[]
