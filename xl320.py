@@ -125,11 +125,11 @@ class xl320(object):
 
 		try:
 			self.uart.write(bytearray(packet))
-			a=utime.ticks_us()
+			a=utime.ticks_us() #start time counting
 		except Exception as e:
 			print(e)
 
-		utime.sleep_us(325)
+		utime.sleep_us(325) # this is a time specified experimentally
 		self.dir_com.value(0)
 
 		while True:
@@ -141,7 +141,7 @@ class xl320(object):
 				break
 		
 
-#----------------------METODOS ESPECIFICOS ESCRITURA------------------------------
+#--------------------------SPECIFIC WRITING METHODS------------------------------
 #==================================EEPROM=========================================
 
 	def set_control_mode(self,ID, mode): # 1 (wheel), 2 (joint)
@@ -177,7 +177,7 @@ class xl320(object):
 		comwrite(self.uart,self.dir_com,ID,XL320_GOAL_TORQUE,le(1023))
 
 
-#---------------------METODO ESPECIFICOS LECTURA----------------------------------
+#----------------------------SPECIFIC READING METHODS-----------------------------
 #==================================EEPROM=========================================
 
 	def read_model_number(self,ID):
@@ -217,7 +217,7 @@ class xl320(object):
 		return data[-3]
 
 
-#========================RAM======================================================
+#=================================RAM===============================================
 	def read_torque_enable(self,ID):
 		data=comread(self.uart,self.dir_com,ID,XL320_TORQUE_ENABLE,le(1))
 		return data[-3]
@@ -266,7 +266,7 @@ class xl320(object):
 		data=comread(self.uart,self.dir_com,ID,XL320_PUNCH,le(2))
 		return word(data[-4],data[-3])
 
-#================================OTROS METODOS====================================
+#================================OTHER METHODS====================================
 
 	def reset_all(self,ID):
 		comwrite(self.uart,self.dir_com,ID,[XL320_RESET_ALL])
@@ -277,8 +277,9 @@ class xl320(object):
 	def reset_all_id_baud(self,ID):
 		comwrite(self.uart,self.dir_com,ID,[XL320_RESET_ALL_BUT_ID_BAUD_RATE])
 
-#===============================METODOS GENERICOS==================================
+#===============================GENERIC METHODS==================================
 #creacion del paquete de escritura y envio
+#package creation, about write instruction
 def comwrite(com, dir_com, ID, reg=None, params=None):
 		dir_com.value(1)
 
@@ -300,7 +301,7 @@ def comwrite(com, dir_com, ID, reg=None, params=None):
 			if (utime.ticks_us()-a)>=1450:
 				break
 		
-#creacion del paquete de lectura y envio
+#package creation, send and receive
 def comread(com,dir_com, ID, reg, length):
 		dir_com.value(1)
 
